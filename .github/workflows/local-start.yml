@@ -28,18 +28,18 @@ jobs:
             exit 1
           }
 
-      - name: Install requirements only
+      - name: Install requirements only (global)
         shell: powershell
         working-directory: test_aoai
         run: |
           python -m pip install -r requirements.txt
-
-
-      - name: Run Streamlit
+      
+      - name: Run Streamlit (Chatbot.py) (global)
         shell: powershell
+        working-directory: test_aoai
         run: |
-          $venvPy = Join-Path $env:GITHUB_WORKSPACE "test_aoai\.venv\Scripts\python.exe"
-          & $venvPy -m streamlit run (Join-Path $env:GITHUB_WORKSPACE "test_aoai\streamlit_app.py") --server.port 8501 --server.address 0.0.0.0
+          python -m streamlit run Chatbot.py --server.port 8501 --server.address 0.0.0.0
+
 
 
 

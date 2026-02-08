@@ -44,7 +44,7 @@ jobs:
         shell: powershell
         run: |
           $dir = Join-Path $env:GITHUB_WORKSPACE "test_aoai"
-          cmd.exe /c start "Streamlit Chatbot" powershell.exe -NoExit -Command "cd `"$dir`"; python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1"
+          cmd.exe /k start "Streamlit Chatbot" powershell.exe -NoExit -Command "cd `"$dir`"; python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1"
           Write-Host "Opened a new PowerShell window for Streamlit. Close it manually when done."
           exit 0
 

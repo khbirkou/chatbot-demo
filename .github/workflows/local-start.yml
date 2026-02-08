@@ -37,8 +37,9 @@ jobs:
 
       - name: Run Streamlit
         shell: powershell
-        working-directory: test_aoai
         run: |
-          .\.venv\Scripts\python.exe -m streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+          $venvPy = Join-Path $env:GITHUB_WORKSPACE "test_aoai\.venv\Scripts\python.exe"
+          & $venvPy -m streamlit run (Join-Path $env:GITHUB_WORKSPACE "test_aoai\streamlit_app.py") --server.port 8501 --server.address 0.0.0.0
+
 
 

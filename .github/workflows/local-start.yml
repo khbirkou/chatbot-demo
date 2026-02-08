@@ -28,27 +28,33 @@ jobs:
             exit 1
           }
 
-      - name: Create venv + install requirements (ensurepip -> get-pip fallback)
+      - name: Create venv + install requirements (force pip)
         shell: powershell
         run: |
-          # Clean old venv if exists (optional but recommended)
+          # Optional: clean venv
           if (Test-Path ".venv") { Remove-Item -Recurse -Force ".venv" }
 
           python -m venv .venv
-
-          # 1) Try ensurepip
           $venvPy = ".\.venv\Scripts\python.exe"
-          try {
-            & $venvPy -m ensurepip --upgrade
-          } catch {
-            Write-Host "ensurepip failed. Using get-pip.py fallback..."
+
+          # Try ensurepip but do NOT fail the step if it crashes
+          & $venvPy -m ensurepip --upgrade 2>$null
+          $ensureExit = $LASTEXITCODE
+
+          # Check if pip works
+          & $venvPy -m pip --version 2>$null
+          $pipExit = $LASTEXITCODE
+
+          if ($pipExit -ne 0) {
+            Write-Host "pip is missing (ensurepip exit=$ensureExit). Installing pip via get-pip.py..."
             Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile "get-pip.py"
             & $venvPy get-pip.py
           }
 
-          # Now pip should exist
+          # Now install deps
           & $venvPy -m pip install --upgrade pip setuptools wheel
           & $venvPy -m pip install -r requirements.txt
+
 
       - name: Run Streamlit
         shell: powershell

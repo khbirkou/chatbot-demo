@@ -31,17 +31,20 @@ jobs:
       - name: Create venv + install requirements
         shell: powershell
         run: |
-          if ("${{ steps.py.outputs.py }}" -eq "py") {
-            py -m venv .venv
-            .\.venv\Scripts\python.exe -m pip install --upgrade pip
-            .\.venv\Scripts\pip.exe install -r requirements.txt
-          } else {
-            python -m venv .venv
-            .\.venv\Scripts\python.exe -m pip install --upgrade pip
-            .\.venv\Scripts\pip.exe install -r requirements.txt
-          }
+          python -m venv .venv
+
+          # Try to bootstrap pip inside the venv
+          .\.venv\Scripts\python.exe -m ensurepip --upgrade
+
+          # Upgrade pip/setuptools/wheel (now inside venv)
+          .\.venv\Scripts\python.exe -m pip install --upgrade pip setuptools wheel
+
+          # Install requirements
+          .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+
 
       - name: Run Streamlit
         shell: powershell
         run: |
           .\.venv\Scripts\python.exe -m streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+

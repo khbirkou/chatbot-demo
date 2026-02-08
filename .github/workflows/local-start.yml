@@ -40,11 +40,32 @@ jobs:
        # run: |
        #   python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1
 
-      - name: Start Streamlit in visible PowerShell window (keep cmd)
+      - name: Run Streamlit
         shell: powershell
         run: |
           $dir = Join-Path $env:GITHUB_WORKSPACE "test_aoai"
-          cmd.exe /k start "Streamlit Chatbot" powershell.exe -NoExit -Command "cd `"$dir`"; python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1"
+
+          # Start Streamlit in its own PowerShell window, capture the process
+          $p = Start-Process -FilePath "powershell.exe" -ArgumentList @(
+            "-NoExit",
+            "-Command",
+            "cd `"$dir`"; python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1"
+          ) -PassThru
+      
+          Write-Host "Streamlit window started. Open: http://127.0.0.1:8501"
+          Write-Host "Waiting up to 10 minutes. Close the Streamlit window to finish early."
+      
+          $deadline = (Get-Date).AddMinutes(10)
+          while ((Get-Date) -lt $deadline) {
+            if ($p.HasExited) {
+              Write-Host "Streamlit was closed by you. Finishing successfully."
+              exit 0
+            }
+            Start-Sleep -Seconds 5
+          }
+      
+          Write-Host "10 minutes passed. Finishing successfully (Streamlit may still be running)."
+          exit 0
           
 
 

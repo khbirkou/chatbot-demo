@@ -12,29 +12,36 @@ jobs:
 
       - name: Check Python is installed
         id: py
-        shell: pwsh
+        shell: powershell
         run: |
           if (Get-Command python -ErrorAction SilentlyContinue) {
             "py=python" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
             python --version
           }
-          elseif (Get-Command python3 -ErrorAction SilentlyContinue) {
-            "py=python3" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-            python3 --version
+          elseif (Get-Command py -ErrorAction SilentlyContinue) {
+            # Windows Python Launcher
+            "py=py" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            py --version
           }
           else {
-            Write-Error "Python is not installed on this self-hosted runner. Install Python and re-run."
+            Write-Error "Python not found. Install Python and ensure it's in PATH (or py launcher exists)."
             exit 1
           }
 
       - name: Create venv + install requirements
-        shell: pwsh
+        shell: powershell
         run: |
-          & "${{ steps.py.outputs.py }}" -m venv .venv
-          .\.venv\Scripts\python.exe -m pip install --upgrade pip
-          .\.venv\Scripts\pip.exe install -r requirements.txt
+          if ("${{ steps.py.outputs.py }}" -eq "py") {
+            py -m venv .venv
+            .\.venv\Scripts\python.exe -m pip install --upgrade pip
+            .\.venv\Scripts\pip.exe install -r requirements.txt
+          } else {
+            python -m venv .venv
+            .\.venv\Scripts\python.exe -m pip install --upgrade pip
+            .\.venv\Scripts\pip.exe install -r requirements.txt
+          }
 
       - name: Run Streamlit
-        shell: pwsh
+        shell: powershell
         run: |
           .\.venv\Scripts\python.exe -m streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0

@@ -40,18 +40,14 @@ jobs:
        # run: |
        #   python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1
 
-      - name: Start Streamlit in new PowerShell window (detached)
+      - name: Start Streamlit in visible PowerShell window
         shell: powershell
         working-directory: test_aoai
         run: |
-          Start-Process powershell.exe -ArgumentList @(
-            '-NoExit',
-            '-Command',
-            'python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1'
-          )
-      
-          Write-Host "Started Streamlit in a new PowerShell window."
+          cmd.exe /c start "Streamlit Chatbot" powershell.exe -NoExit -Command "python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1"
+          Write-Host "Opened a new PowerShell window for Streamlit."
           exit 0
+
 
 
 

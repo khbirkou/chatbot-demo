@@ -28,21 +28,20 @@ jobs:
             exit 1
           }
 
-      - name: Create venv + install requirements
+      - name: Create venv + install requirements (force pip)
         shell: powershell
+        working-directory: test_aoai
         run: |
           if (Test-Path ".venv") { Remove-Item -Recurse -Force ".venv" }
 
           python -m venv .venv
           $venvPy = ".\.venv\Scripts\python.exe"
 
-          # Run ensurepip but NEVER fail the step because of it
           $old = $ErrorActionPreference
           $ErrorActionPreference = "Continue"
           & $venvPy -m ensurepip --upgrade | Out-Null
           $ErrorActionPreference = $old
 
-          # Check if pip exists; if not, bootstrap via get-pip
           & $venvPy -m pip --version | Out-Null
           if ($LASTEXITCODE -ne 0) {
             Write-Host "pip is missing -> installing via get-pip.py"
@@ -52,8 +51,6 @@ jobs:
 
           & $venvPy -m pip install --upgrade pip setuptools wheel
           & $venvPy -m pip install -r requirements.txt
-
-
 
       - name: Run Streamlit
         shell: powershell

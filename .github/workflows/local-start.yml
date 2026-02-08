@@ -28,32 +28,16 @@ jobs:
             exit 1
           }
 
-      - name: Create venv + install requirements (force pip)
+      - name: Install requirements only
         shell: powershell
         working-directory: test_aoai
         run: |
-          if (Test-Path ".venv") { Remove-Item -Recurse -Force ".venv" }
+          python -m pip install -r requirements.txt
 
-          python -m venv .venv
-          $venvPy = ".\.venv\Scripts\python.exe"
-
-          $old = $ErrorActionPreference
-          $ErrorActionPreference = "Continue"
-          & $venvPy -m ensurepip --upgrade | Out-Null
-          $ErrorActionPreference = $old
-
-          & $venvPy -m pip --version | Out-Null
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "pip is missing -> installing via get-pip.py"
-            Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile "get-pip.py"
-            & $venvPy get-pip.py
-          }
-
-          & $venvPy -m pip install --upgrade pip setuptools wheel
-          & $venvPy -m pip install -r requirements.txt
 
       - name: Run Streamlit
         shell: powershell
+        working-directory: test_aoai
         run: |
           .\.venv\Scripts\python.exe -m streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
 

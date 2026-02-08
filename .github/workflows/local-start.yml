@@ -10,16 +10,35 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Install requirements
+      - name: Check Python is installed
+        id: py
+        shell: bash
         run: |
+          set -e
+          if command -v python3 >/dev/null 2>&1; then
+            echo "py=python3" >> "$GITHUB_OUTPUT"
+            python3 --version
+          elif command -v python >/dev/null 2>&1; then
+            echo "py=python" >> "$GITHUB_OUTPUT"
+            python --version
+          else
+            echo "Python is not installed on this self-hosted runner."
+            echo "Install Python and re-run the workflow."
+            exit 1
+          fi
+
+      - name: Create venv + install requirements
+        shell: bash
+        run: |
+          set -e
+          ${{ steps.py.outputs.py }} -m venv .venv
+          source .venv/bin/activate
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run Streamlit
+        shell: bash
         run: |
-          streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+          set -e
+          source .venv/bin/activate
+          python -m streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0

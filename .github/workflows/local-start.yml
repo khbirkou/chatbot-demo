@@ -34,11 +34,25 @@ jobs:
         run: |
           python -m pip install -r requirements.txt
       
-      - name: Run Streamlit (Chatbot.py) (global)
+      #- name: Run Streamlit (Chatbot.py) (global)
+       # shell: powershell
+       # working-directory: test_aoai
+       # run: |
+       #   python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1
+
+      - name: Start Streamlit in new PowerShell window (detached)
         shell: powershell
         working-directory: test_aoai
         run: |
-          python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1
+          Start-Process powershell.exe -ArgumentList @(
+            '-NoExit',
+            '-Command',
+            'python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1'
+          )
+      
+          Write-Host "Started Streamlit in a new PowerShell window."
+          exit 0
+
 
 
 

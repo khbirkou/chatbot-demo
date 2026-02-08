@@ -12,33 +12,29 @@ jobs:
 
       - name: Check Python is installed
         id: py
-        shell: bash
+        shell: pwsh
         run: |
-          set -e
-          if command -v python3 >/dev/null 2>&1; then
-            echo "py=python3" >> "$GITHUB_OUTPUT"
-            python3 --version
-          elif command -v python >/dev/null 2>&1; then
-            echo "py=python" >> "$GITHUB_OUTPUT"
+          if (Get-Command python -ErrorAction SilentlyContinue) {
+            "py=python" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
             python --version
-          else
-            echo "Python is not installed on this self-hosted runner."
-            echo "Install Python and re-run the workflow."
+          }
+          elseif (Get-Command python3 -ErrorAction SilentlyContinue) {
+            "py=python3" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            python3 --version
+          }
+          else {
+            Write-Error "Python is not installed on this self-hosted runner. Install Python and re-run."
             exit 1
-          fi
+          }
 
       - name: Create venv + install requirements
-        shell: bash
+        shell: pwsh
         run: |
-          set -e
-          ${{ steps.py.outputs.py }} -m venv .venv
-          source .venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          & "${{ steps.py.outputs.py }}" -m venv .venv
+          .\.venv\Scripts\python.exe -m pip install --upgrade pip
+          .\.venv\Scripts\pip.exe install -r requirements.txt
 
       - name: Run Streamlit
-        shell: bash
+        shell: pwsh
         run: |
-          set -e
-          source .venv/bin/activate
-          python -m streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+          .\.venv\Scripts\python.exe -m streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0

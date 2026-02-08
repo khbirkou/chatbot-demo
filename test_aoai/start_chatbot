@@ -1,2 +1,0 @@
-powershell1 server starten > python -m uvicorn app:app --reload  
-powershell2 chatbot starten > python -m streamlit run Chatbot.py 

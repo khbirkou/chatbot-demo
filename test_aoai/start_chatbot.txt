@@ -1,0 +1,11 @@
+Lokal:
+powershell1 server starten > python -m uvicorn app:app --reload  
+powershell2 chatbot starten > python -m streamlit run Chatbot.py 
+
+Github_runner:
+Merksatz
+runs-on: self-hosted = GitHub sagt: “Ich brauche deinen eigenen Runner”
+./run.cmd = Du startest den Runner auf deinem Laptop, damit GitHub ihn benutzen kann
+Noch ein wichtiger Unterschied
+runs-on: self-hosted ist Konfiguration (im Repo).
+run.cmd ist Ausführung (auf deinem Gerät).

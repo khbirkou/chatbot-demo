@@ -2,7 +2,7 @@ import uuid
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8000"
+API_URL = "http://127.0.0.1:8501"
 
 # KEIN st.set_page_config() hier (nur im Hauptfile chatbot.py)
 
@@ -75,3 +75,4 @@ if user_text:
             with st.expander(t("Quellen", "Sources")):
                 for s in sources:
                     st.write(s)
+

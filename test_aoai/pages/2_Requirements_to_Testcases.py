@@ -3,7 +3,7 @@ import re
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8501"
+API_URL = "http://127.0.0.1:8000"
 
 
 # ----------------------------
@@ -269,4 +269,5 @@ Gib NUR gültiges JSON zurück (ein einziges JSON-Objekt) mit diesem Schema:
         st.write("**Raw model output:**")
         st.code(raw)
         st.exception(e)
+
 

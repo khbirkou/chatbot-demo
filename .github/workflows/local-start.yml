@@ -40,6 +40,17 @@ jobs:
        # run: |
        #   python -m streamlit run Chatbot.py --server.port 8501 --server.address 127.0.0.1
 
+      - name: Start API (uvicorn) in background
+        shell: powershell
+        working-directory: test_aoai
+        run: |
+          Start-Process -FilePath "python" -ArgumentList @(
+            "-m","uvicorn","app:app",
+            "--host","127.0.0.1",
+            "--port","8000"
+          )
+          Start-Sleep -Seconds 2
+      
       - name: Run Streamlit
         shell: powershell
         run: |

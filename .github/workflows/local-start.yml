@@ -66,6 +66,25 @@ jobs:
       
           Write-Host "10 minutes passed. Finishing successfully (Streamlit may still be running)."
           exit 0
+
+
+      - name: Cleanup workspace (always)
+        if: always()
+        shell: powershell
+        run: |
+          Write-Host "Cleaning workspace: $env:GITHUB_WORKSPACE"
+      
+          # Safety check: never delete if workspace path looks wrong/empty
+          if ([string]::IsNullOrWhiteSpace($env:GITHUB_WORKSPACE)) { 
+            Write-Error "GITHUB_WORKSPACE is empty. Refusing to delete."
+            exit 0
+          }
+      
+          # Delete everything inside the workspace, but not the folder itself
+          Get-ChildItem -LiteralPath $env:GITHUB_WORKSPACE -Force | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+      
+          Write-Host "Workspace cleaned."
+
           
 
 

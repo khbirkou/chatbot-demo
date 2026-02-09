@@ -4,7 +4,7 @@ import uuid
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8501"
+API_URL = "http://127.0.0.1:8000"
 
 
 # ----------------------------
@@ -345,4 +345,5 @@ Regeln:
             "Dieses Feature ist noch ein Platzhalter. (Später: DB-Anbindung)",
             "This is a placeholder for now. (Later: DB integration)"
         ))
+
 
